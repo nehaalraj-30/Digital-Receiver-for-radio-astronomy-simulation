@@ -12,18 +12,18 @@ adc_sampling_rate = 4e9
 duration = fft_points/adc_sampling_rate 
 n_samples = int(duration * sampling_rate_input)
 t = np.linspace(0,duration,n_samples,endpoint = False)
-dt = t[1]-t[0] #d=sampling interval in seconds
+dt = t[1]-t[0] # d=sampling interval in seconds
 
 plt.figure(figsize=(12, 6))
 
 full_precision,gain = window_precision(t)
-#giving number of points greater than 16k but lesser than 32k for better graph but not too much
+#giving number of points greater than 16k but lesser than 32k for better graph and keep within computational power
 fft_len = 2**int(np.ceil(np.log2(len(full_precision)))+1)  
 freq_full_precision = np.fft.fft(full_precision,fft_len) 
-freq_full_precision_shift = np.fft.fftshift(freq_full_precision) # o/p shift
-freqs_precision = np.fft.fftshift(np.fft.fftfreq(fft_len,d=dt))  #bin-shift 
+freq_full_precision_shift = np.fft.fftshift(freq_full_precision) # o/p shift to center
+freqs_precision = np.fft.fftshift(np.fft.fftfreq(fft_len,d=dt))  #bin-shift to center
 
-eps = 1e-12
+eps = 1e-12 # to avoid dividing by 0
 freq_full_precision_shift_db = 20 * np.log10(np.abs(freq_full_precision_shift) / np.max(np.abs(freq_full_precision_shift))+eps)
 plt.plot(freqs_precision, freq_full_precision_shift_db, label='Full-Precision Window')
 
