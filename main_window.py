@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from window import window_bits,window_precision
+from apsera_sim.window import window_bits,window_precision
 
 M = 16
 N = 1024

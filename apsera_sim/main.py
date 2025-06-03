@@ -2,9 +2,9 @@ import matplotlib
 matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 import numpy as np
-from sine_input import sine_curve
+from apsera_sim.sine_input import sine_curve
 from adc import sample,adc
-from window import window_bits
+from apsera_sim.window import window_bits
 from fft_12 import fft
 
 M = 16
