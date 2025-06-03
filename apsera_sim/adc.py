@@ -1,5 +1,6 @@
 import numpy as np
 
+#sample time and signal of the sine wave
 def sample(time,adc_sampling_rate,signal):
     step = int(len(time) / (adc_sampling_rate*(time[-1]-time[0]))) 
     return time[::step],signal[::step]

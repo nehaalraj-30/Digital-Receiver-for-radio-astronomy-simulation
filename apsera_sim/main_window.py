@@ -19,7 +19,7 @@ plt.figure(figsize=(12, 6))
 full_precision,gain = window_precision(t)
 #giving number of points greater than 16k but lesser than 32k for better graph but not too much
 fft_len = 2**int(np.ceil(np.log2(len(full_precision)))+1)  
-freq_full_precision = np.fft.fft(full_precision,fft_len)  # Zero-padding 
+freq_full_precision = np.fft.fft(full_precision,fft_len) 
 freq_full_precision_shift = np.fft.fftshift(freq_full_precision) # o/p shift
 freqs_precision = np.fft.fftshift(np.fft.fftfreq(fft_len,d=dt))  #bin-shift 
 
