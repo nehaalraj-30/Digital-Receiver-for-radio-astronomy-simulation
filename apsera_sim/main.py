@@ -51,7 +51,7 @@ y_fp_shift = np.fft.fftshift(y_fp)
 mags_fp_shift = np.abs(y_fp_shift)/(P*gain_fp)
 eps = 1e-12 # adding to avoid 0
 mags_db = 20*np.log10(mags_fp_shift/(np.max(mags_fp_shift)+eps))
-plt.figure(figsize=(12, 6))
+plt.figure(figsize=(12,6))
 plt.plot(freq_fp_shift, mags_db, label='full precision fft')
 
 #fft of 30 bit (adc_bit = 12 window_bit_precision = 18(arch of dsp_slice on red pitaya))
@@ -85,6 +85,7 @@ plt.legend()
 plt.tight_layout()
 plt.show()
 plt.savefig("fft_main_18-22b.png")
+plt.close()
 
 plt.figure(figsize=(12,6))
 for bit in n_bits:
@@ -98,6 +99,7 @@ plt.legend()
 plt.tight_layout()
 plt.show()
 plt.savefig("fft_error_8-16b.png") 
+plt.close()
 
 bit_vals = list(diff_mean.keys())
 mean_errors_db = list(diff_mean.values())
@@ -112,6 +114,7 @@ plt.legend()
 plt.tight_layout()
 plt.show()
 plt.savefig("fft_error_mean_8-16b.png") 
+plt.close()
 
 # from graph we can conclude 10 bit or 12 bit is sufficient truncation as error beyond 12 bit 
 # is not reducing by much

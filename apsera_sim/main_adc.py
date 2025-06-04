@@ -55,7 +55,9 @@ digital_values = [adc(vin,n_bits,v_ref) for vin in adc_signal]
 
 no_offset_dig = digital_values - np.mean(digital_values)
 
-plt.step(adc_time*1e6, no_offset_dig, where ='post',marker='o')
+no_offset_dig = (no_offset_dig)/2**(n_bits-1)
+
+plt.step(adc_time*1e6, digital_values, where ='post',marker='o')
 plt.xlabel('time(us)')
 plt.ylabel('Digital Output (Decimal)')
 plt.title(f'{n_bits}-bit ADC Conversion')
@@ -68,7 +70,7 @@ freqs_n_bits,mags_n_bits = fft(M,N,P,no_offset_dig,adc_sampling_rate,gain=1)
 
 plt.figure(figsize=(12, 6))
 plt.plot(freqs_n_bits, mags_n_bits, label='n_bits Signal FFT')
-plt.title("FFT of" f'{n_bits} Signal (Row-Column FFT)')
+plt.title("FFT of " f'{n_bits} Signal (Row-Column FFT)')
 plt.xlabel("Frequency (Hz)")
 plt.ylabel("|X(f)|")
 plt.grid(True)
