@@ -74,7 +74,6 @@ for bit in n_bits:
     diff_linear = np.abs(mags_truncated-mags_30_shift)
     diff[bit] = 20*np.log10(diff_linear+eps)
     diff_mean[bit] = 20*np.log10(np.mean(diff_linear)+eps)
-    diff_mean[bit] = np.mean(diff[bit])
     plt.plot(freq_truncated, mags_trunc_db, label=f'{bit}-bit Truncated FFT' )
 
 plt.title("30 and n_bits fft ")
