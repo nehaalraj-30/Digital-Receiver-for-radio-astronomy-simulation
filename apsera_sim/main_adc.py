@@ -8,7 +8,7 @@ M = 16
 N = 1024
 P = M*N
 n_bits = 12
-v_ref = 3.3
+v_ref = 0.7096 # calculated to keep the power = 1dBm 
 f = 2e8
 adc_sampling_rate = 4e9
 fft_points = 16*2**10

@@ -36,7 +36,7 @@ for bit in n_bits:
     plt.plot(freqs_bits, freq_n_bits_shift_db, label=f'{bit}-bit Truncated Window', linestyle='--', linewidth=1.5)
 
 plt.xlim(-200e6, 200e6)
-plt.title(f"Magnitude Spectrum (Row-Column FFT, M={M}, N={N}, n_bits={n_bits})")
+plt.title(f"Magnitude Spectrum db (Row-Column FFT, M={M}, N={N}, n_bits={n_bits})")
 plt.xlabel("Frequency (Hz)")
 plt.ylabel("|X(f)|")
 plt.xlim(-adc_sampling_rate / 2, adc_sampling_rate / 2)
