@@ -24,6 +24,7 @@ freq_full_precision_shift = np.fft.fftshift(freq_full_precision) # o/p shift to 
 freqs_precision = np.fft.fftshift(np.fft.fftfreq(fft_len,d=dt))  #bin-shift to center
 
 eps = 1e-12 # to avoid dividing by 0
+#dividing each point by its max 
 freq_full_precision_shift_db = 20 * np.log10(np.abs(freq_full_precision_shift) / np.max(np.abs(freq_full_precision_shift))+eps)
 plt.plot(freqs_precision, freq_full_precision_shift_db, label='Full-Precision Window')
 
@@ -33,9 +34,8 @@ for bit in n_bits:
     freq_n_bits_shift = np.fft.fftshift(freq_n_bits) # o/p shift
     freqs_bits = np.fft.fftshift(np.fft.fftfreq(fft_len,d=dt))  #bin-shift 
     freq_n_bits_shift_db = 20 * np.log10(np.abs(freq_n_bits_shift) / np.max(np.abs(freq_n_bits_shift))+eps)
-    plt.plot(freqs_bits, freq_n_bits_shift_db, label=f'{bit}-bit Truncated Window', linestyle='--', linewidth=1.5)
+    plt.plot(freqs_bits, freq_n_bits_shift_db, label=f'{bit}-bit Truncated Window')
 
-plt.xlim(-200e6, 200e6)
 plt.title(f"Magnitude Spectrum db (Row-Column FFT, M={M}, N={N}, n_bits={n_bits})")
 plt.xlabel("Frequency (Hz)")
 plt.ylabel("|X(f)|")
