@@ -57,14 +57,16 @@ im_part_int = (np.round(im_part)).astype(np.int64)
 
 # /im_part=np.round(im_part)
 # re_part=np.round(re_part)
-plt.subplot(1,2,1)
-plt.plot(freq,re_part)
-plt.subplot(1,2,2)
-plt.plot(freq,im_part)
-plt.show()
+# plt.subplot(1,2,1)
+# plt.plot(freq,re_part)
+# plt.subplot(1,2,2)
+# plt.plot(freq,im_part)
+# plt.show()
 index_signal = np.array(im_part_int).argmax()
 print("max re (signed 32-bit):", format(re_part_int[index_signal] & 0xFFFFFFFF, '#034b'))
 print("max im (signed 32-bit):", format(im_part_int[index_signal] & 0xFFFFFFFF, '#034b'))
+
+# from observed values truncating to 14 bits seems to retain fft properties
 
 
 # im_part_scaled = im_part
