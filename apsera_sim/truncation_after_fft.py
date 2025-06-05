@@ -32,7 +32,7 @@ adc_time,adc_signal = sample(time,adc_sampling_rate,vin_values)
 digital_values = [adc(vin,adc_bits,v_ref) for vin in adc_signal] 
 
 # removing dc offset
-digital_values_no_offset = np.array(digital_values) - 2049 
+digital_values_no_offset = np.array(digital_values) - (((2**adc_bits)/2)+1)
 
 # normalising signal to regular sine wave for right fft amplitude 
 # digital_values_no_offset = np.array((digital_values_no_offset)*1)/2**(0) 
@@ -52,6 +52,8 @@ windowed_truncate = truncate(truncate_bit,windowed_30)
 freq,re_part,im_part = fft_complex(M,N,P,windowed_truncate,adc_sampling_rate,gain_bits)
 
 print(np.max(windowed_truncate))
+re_part_int = (np.round(re_part)).astype(np.int64)
+im_part_int = (np.round(im_part)).astype(np.int64)
 
 # /im_part=np.round(im_part)
 # re_part=np.round(re_part)
@@ -60,9 +62,10 @@ plt.plot(freq,re_part)
 plt.subplot(1,2,2)
 plt.plot(freq,im_part)
 plt.show()
-index_signal = np.array(im_part).argmax()
-print("max im", bin(im_part[index_signal]))
-print("max real", re_part[10000])
+index_signal = np.array(im_part_int).argmax()
+print("max re (signed 32-bit):", format(re_part_int[index_signal] & 0xFFFFFFFF, '#034b'))
+print("max im (signed 32-bit):", format(im_part_int[index_signal] & 0xFFFFFFFF, '#034b'))
+
 
 # im_part_scaled = im_part
 # im_part_scaled = np.round(im_part_scaled).astype(int)
