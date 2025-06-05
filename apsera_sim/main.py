@@ -35,8 +35,19 @@ digital_values = [adc(vin,adc_bits,v_ref) for vin in adc_signal]
 # removing dc offset
 digital_values_no_offset = digital_values - np.mean(digital_values)  
 
+plt.plot(adc_time,digital_values_no_offset)
+plt.title(" signal aftr adc ")
+plt.xlabel("time")
+plt.ylabel("amp")
+# plt.xlim(-4000e6, 4000e6)
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+plt.close()
+    
+
 # normalising signal to regular sine wave for right fft amplitude 
-digital_values_no_offset = np.array((digital_values_no_offset)*2)/2**(adc_bits) 
+# digital_values_no_offset = np.array((digital_values_no_offset)*2)/2**(adc_bits) 
 
 w_signal,gain_bits = window_bits(adc_time,w_bit)
 w_signal_fp,gain_fp = window_precision(adc_time)
@@ -75,6 +86,8 @@ for bit in n_bits:
     diff[bit] = 20*np.log10(diff_linear+eps)
     diff_mean[bit] = 20*np.log10(np.mean(diff_linear)+eps)
     plt.plot(freq_truncated, mags_trunc_db, label=f'{bit}-bit Truncated FFT' )
+    
+
 
 plt.title("30 and n_bits fft ")
 plt.xlabel("Frequency (Hz)")

@@ -7,7 +7,7 @@ def sample(time,adc_sampling_rate,signal):
 
 def adc(vin, n_bits, v_ref):
     vin_clipped = np.clip(vin,0,v_ref)
-    return (np.floor((vin_clipped/v_ref)*(2**n_bits))).astype(int)
+    return (np.floor((vin_clipped/v_ref)*(2**(n_bits)))).astype(int)
 
 
 
