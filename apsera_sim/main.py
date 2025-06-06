@@ -33,10 +33,10 @@ adc_time,adc_signal = sample(time,adc_sampling_rate,vin_values)
 digital_values = [adc(vin,adc_bits,v_ref) for vin in adc_signal] 
 
 # removing dc offset
-digital_values_no_offset = digital_values - np.mean(digital_values)  
-
+digital_values_no_offset = np.array(digital_values) - (2**(adc_bits-1))
+digital_values_no_offset = digital_values_no_offset.astype(int)
 # normalising signal to regular sine wave for right fft amplitude 
-digital_values_no_offset = np.array((digital_values_no_offset)*2)/((2**(adc_bits))-1) 
+digital_values_no_offset = np.array((digital_values_no_offset)*2)/((2**(adc_bits)-1)) 
 
 w_signal,gain_bits = window_bits_normalised(adc_time,w_bit)
 w_signal_fp,gain_fp = window_precision(adc_time)
