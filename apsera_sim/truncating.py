@@ -12,7 +12,7 @@ def truncate_normalised(n_bits,windowed_sig):
     return windowed_truncated_normalised
 
 def truncate(n_bits,windowed_sig):
-    max_int = 2**n_bits - 1
+    max_int = 2**(n_bits-1) - 1
     # bring b/w 0 and 1
     windowed_scale = windowed_sig/np.max(windowed_sig)  
     # assign appropriate integers depending upon bits

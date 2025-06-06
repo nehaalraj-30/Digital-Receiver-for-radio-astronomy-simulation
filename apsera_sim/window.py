@@ -10,9 +10,8 @@ def window_precision(t):
 
 def window_bits(t,n_bits):
     length = len(t)
-    n_bits -= 1
     w = signal.windows.hann(length)
-    max_int = 2**n_bits - 1 
+    max_int = 2**(n_bits-1) - 1 
     w_scaled = w/np.max(w)
     # scaling so that when we multiply by max int window is stil b/w 0 -> 1
     w_bits = np.round(w_scaled* max_int).astype(int) 
