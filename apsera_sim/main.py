@@ -1,5 +1,5 @@
 import matplotlib
-matplotlib.use("TkAgg")
+matplotlib.use('TKAgg')
 import matplotlib.pyplot as plt
 import numpy as np
 from sine_input import sine_curve
@@ -15,7 +15,7 @@ alpha = 1
 n_bits = [8,10,12,14,16]
 adc_bits = 12
 w_bit = 18
-v_ref = 0.7096 # to keep output power that is adc at 1dBm of input 
+v_ref = 0.7962 # to keep output power that is adc at 2dBm of input 
 f = 5e8
 sampling_rate = 1e12 # for producing sine wave
 adc_sampling_rate = 4e9
@@ -116,7 +116,7 @@ plt.savefig("fft_error_mean_8-16b.png")
 plt.show()
 plt.close()
 
-# from graph we can conclude 10 bit or 12 bit is sufficient truncation as error beyond 12 bit 
+# from graph we can conclude 12 bit or 14 bit is sufficient truncation as error beyond 12 bit 
 # is not reducing by much
 
 

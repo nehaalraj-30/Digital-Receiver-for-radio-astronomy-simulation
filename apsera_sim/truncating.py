@@ -21,4 +21,17 @@ def truncate(n_bits,windowed_sig):
     # windowed_truncated_final = windowed_truncated/max_int
     
     return windowed_truncated
+
+def truncate_after_fft(re_part_int,im_part_int,fft_points):
+
+    for i in range(fft_points):
+        if re_part_int[i]>=0:
+            re_part_int[i] = (re_part_int[i]%(2**24))//2**6 
+        if re_part_int[i]<0:
+            re_part_int[i] = -((-(re_part_int[i])%(2**24))//2**6)
+        if im_part_int[i]>=0:
+            im_part_int[i] = (im_part_int[i]%(2**24))//2**6        
+        if im_part_int[i]<0:
+            im_part_int[i] = -((-(im_part_int[i])%(2**24))//2**6)
     
+    return re_part_int,im_part_int
