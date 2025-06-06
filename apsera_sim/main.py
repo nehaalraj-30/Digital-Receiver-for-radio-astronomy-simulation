@@ -36,7 +36,7 @@ digital_values = [adc(vin,adc_bits,v_ref) for vin in adc_signal]
 digital_values_no_offset = digital_values - np.mean(digital_values)  
 
 # normalising signal to regular sine wave for right fft amplitude 
-digital_values_no_offset = np.array((digital_values_no_offset)*2)/2**(adc_bits) 
+digital_values_no_offset = np.array((digital_values_no_offset)*2)/((2**(adc_bits))-1) 
 
 w_signal,gain_bits = window_bits_normalised(adc_time,w_bit)
 w_signal_fp,gain_fp = window_precision(adc_time)

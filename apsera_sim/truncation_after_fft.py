@@ -32,13 +32,14 @@ adc_time,adc_signal = sample(time,adc_sampling_rate,vin_values)
 digital_values = [adc(vin,adc_bits,v_ref) for vin in adc_signal] 
 
 # removing dc offset
-digital_values_no_offset = np.array(digital_values) - (((2**adc_bits)/2)+1)
+digital_values_no_offset = np.array(digital_values) - (((2**adc_bits)/2))
 
 # normalising signal to regular sine wave for right fft amplitude 
 # digital_values_no_offset = np.array((digital_values_no_offset)*1)/2**(0) 
 
-# plt.plot(adc_time,digital_values_no_offset)
-# plt.show()
+plt.step(adc_time,digital_values_no_offset)
+plt.grid(True)
+plt.show()
 
 w_signal,gain_bits = window_bits(adc_time,w_bit)
 windowed_30 = digital_values_no_offset * w_signal # windowing signal
@@ -63,9 +64,11 @@ im_part_int = (np.round(im_part)).astype(np.int64)
 # plt.plot(freq,im_part)
 # plt.show()
 index_signal = np.array(im_part_int).argmax()
-print("max re (signed 32-bit):", format(re_part_int[index_signal] & 0xFFFFFFFF, '#034b'))
-print("max im (signed 32-bit):", format(im_part_int[index_signal] & 0xFFFFFFFF, '#034b'))
+print("max re (signed 32-bit):", format(abs(re_part_int[index_signal]) & 0xFFFFFFFF, '#034b'))
+print("max im (signed 32-bit):", format(abs(im_part_int[index_signal]) & 0xFFFFFFFF, '#034b'))
 
+for i in range(8000,8031):
+    print(format(abs(re_part_int[i]) & 0xFFFFFFFF, '#034b'))
 # from observed values truncating to 14 bits seems to retain fft properties
 
 
