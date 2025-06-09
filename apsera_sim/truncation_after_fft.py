@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sine_input import sine_curve
 from adc import sample,adc
-from window import window_bits,window_precision
+from window import window_bits
 from fft_return_complex import fft_complex
 from truncating import truncate,truncate_after_fft
 
@@ -50,6 +50,9 @@ w_signal_2,gain_bits = window_bits(adc_time_2,w_bit)
 windowed_30_1 = digital_values_no_offset_1 * w_signal_1
 windowed_30_2 = digital_values_no_offset_2 * w_signal_2 # windowing signal
 eps = 1e-12 # to avoid log(0)
+
+# plt.plot(adc_time_1,windowed_30_1)
+# plt.show()
 
 # truncate to 12 bit
 windowed_truncate_1 = truncate(truncate_bit,windowed_30_1)
@@ -148,7 +151,7 @@ cross_corr_combined = (np.array(cross_corr_re) + 1j*(np.array(cross_corr_im)))
 
 # cross_corr_power_acc_mag = [0]*len(cross_corr_mag)
 # cross_corr_power_acc_phase = [0]*len(cross_corr_phase)
-cross_corr_combined_acc = [0]*len(cross_corr_combined)
+cross_corr_combined_acc = np.zeros_like(cross_corr_combined, dtype=complex)
 
 for i in range(0,4095):
     cross_corr_combined_acc = cross_corr_combined + cross_corr_combined_acc
@@ -176,6 +179,6 @@ plt.plot(freq_1,cross_corr_phase)
 plt.xlim(0,2000e6)
 plt.title("power_spectrum_phase and  cross accumalation of FFT Output Signal")
 plt.xlabel("freq")
-plt.ylabel("cross_corr_power_acc")
+plt.ylabel("cross_corr_phase_degrees")
 plt.grid(True)
 plt.show()    
