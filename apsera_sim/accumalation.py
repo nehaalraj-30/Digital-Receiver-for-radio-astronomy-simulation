@@ -162,3 +162,5 @@ plt.xlabel("freq")
 plt.ylabel("power_spectrum_accu_2")
 plt.grid(True)
 plt.show()     
+
+# phase graph has some lines at non tone bin due to quantization error
