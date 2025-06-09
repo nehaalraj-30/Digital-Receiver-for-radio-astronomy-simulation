@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from apsera_sim.window import window_bits,window_precision
+from window import window_bits,window_precision
 
 M = 16
 N = 1024
@@ -46,4 +46,4 @@ plt.tight_layout()
 plt.savefig("fft_main_superimposed_2.png")
 plt.show()
 
-
+# error very less for 18 bits from graph

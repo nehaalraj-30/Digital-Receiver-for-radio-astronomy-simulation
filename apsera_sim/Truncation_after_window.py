@@ -24,7 +24,7 @@ fft_points = 16*2**10
 # duration such that when sampled we get appropriate no. of points
 duration = fft_points/adc_sampling_rate 
 
-time,vin_values = sine_curve(f,sampling_rate,duration,v_ref)
+time,vin_values = sine_curve(f,sampling_rate,duration,v_ref,acc=1)
 
 # sample and hold
 adc_time,adc_signal = sample(time,adc_sampling_rate,vin_values) 
