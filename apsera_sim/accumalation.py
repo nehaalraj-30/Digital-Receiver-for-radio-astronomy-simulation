@@ -1,4 +1,3 @@
-
 import matplotlib.pyplot as plt
 import numpy as np
 from sine_input import sine_curve
@@ -27,9 +26,11 @@ y = fft_points
 
 # duration such that when sampled we get appropriate no. of points
 duration = fft_points/adc_sampling_rate 
+t_static = np.linspace(0, duration, fft_points, endpoint=False)
 
-time_1,sine_1 = sine_curve(f1,sampling_rate,duration,0,acc)
-time_2,sine_2 = sine_curve(f2,sampling_rate,duration,90,acc)
+#generating window once
+w_signal_1,gain_bits = window_bits(t_static,w_bit)
+w_signal_2 = w_signal_1
 
 power_spectrum_accu_1 = [0]*(P)
 power_spectrum_accu_2 = [0]*(P)
@@ -38,21 +39,14 @@ cross_corr_combined_acc = np.zeros(P, dtype=complex)
 
 for i in range(0,acc):
     
-    time_chunk_1 = []
-    time_chunk_2 = []
-    vin_values_1 = []
-    vin_values_2 = []
-
-# sampling
-    time_chunk_1 = time_1[x:y]
-    time_chunk_2 = time_2[x:y]
-    vin_values_1 = sine_1[x:y]
-    vin_values_2 = sine_2[x:y]
+    # taking ith 16k chunk at 4Ghz
+    time_1,sine_1 = sine_curve(f1,sampling_rate,duration,0,i)
+    time_2,sine_2 = sine_curve(f2,sampling_rate,duration,90,i)
     
-    adc_time_1 = time_chunk_1
-    adc_time_2 = time_chunk_2
-    adc_signal_1 = vin_values_1
-    adc_signal_2 = vin_values_2
+    adc_time_1 = time_1
+    adc_time_2 = time_2
+    adc_signal_1 = sine_1
+    adc_signal_2 = sine_2
 
     #passing adc
     digital_values_1 = [adc(vin,adc_bits,v_ref) for vin in adc_signal_1] 
@@ -63,13 +57,10 @@ for i in range(0,acc):
     digital_values_no_offset_1 = (digital_values_no_offset_1).astype(int)
     digital_values_no_offset_2 = np.array(digital_values_2) - (2**(adc_bits-1))
     digital_values_no_offset_2 = (digital_values_no_offset_2).astype(int)
-    
-    #generating window
-    w_signal_1,gain_bits = window_bits(adc_time_1,w_bit)
-    w_signal_2,gain_bits = window_bits(adc_time_2,w_bit)
 
+    # windowing signal
     windowed_30_1 = digital_values_no_offset_1 * w_signal_1
-    windowed_30_2 = digital_values_no_offset_2 * w_signal_2 # windowing signal
+    windowed_30_2 = digital_values_no_offset_2 * w_signal_2
     eps = 1e-12 # to avoid log(0)
 
     # truncate to 12 bit
