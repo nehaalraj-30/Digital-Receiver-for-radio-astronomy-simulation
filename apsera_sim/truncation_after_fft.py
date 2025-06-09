@@ -16,7 +16,8 @@ truncate_bit = 12
 adc_bits = 12
 w_bit = 18
 v_ref = 0.7962 # to keep output power that is adc at 2dBm of input 
-f = 5e8
+f1 = 5e8
+f2 = 5e8
 sampling_rate = 1e12 # for producing sine wave
 adc_sampling_rate = 4e9
 fft_points = 2**14
@@ -24,62 +25,157 @@ fft_points = 2**14
 # duration such that when sampled we get appropriate no. of points
 duration = fft_points/adc_sampling_rate 
 
-time,vin_values = sine_curve(f,sampling_rate,duration,v_ref)
+time_1,vin_values_1 = sine_curve(f1,sampling_rate,duration,0)
+time_2,vin_values_2 = sine_curve(f2,sampling_rate,duration,90)
 
+# plt.plot(time_2,vin_values_2)
+# plt.show()
 # sample and hold
-adc_time,adc_signal = sample(time,adc_sampling_rate,vin_values) 
+adc_time_1,adc_signal_1 = sample(time_1,adc_sampling_rate,vin_values_1) 
+adc_time_2,adc_signal_2 = sample(time_2,adc_sampling_rate,vin_values_2)
 
 #passing adc
-digital_values = [adc(vin,adc_bits,v_ref) for vin in adc_signal] 
+digital_values_1 = [adc(vin,adc_bits,v_ref) for vin in adc_signal_1] 
+digital_values_2 = [adc(vin,adc_bits,v_ref) for vin in adc_signal_2] 
 
 # removing dc offset
-digital_values_no_offset = np.array(digital_values) - (2**(adc_bits-1))
-digital_values_no_offset = (digital_values_no_offset).astype(int)
+digital_values_no_offset_1 = np.array(digital_values_1) - (2**(adc_bits-1))
+digital_values_no_offset_1 = (digital_values_no_offset_1).astype(int)
+digital_values_no_offset_2 = np.array(digital_values_2) - (2**(adc_bits-1))
+digital_values_no_offset_2 = (digital_values_no_offset_2).astype(int)
  
-w_signal,gain_bits = window_bits(adc_time,w_bit)
+w_signal_1,gain_bits = window_bits(adc_time_1,w_bit)
+w_signal_2,gain_bits = window_bits(adc_time_2,w_bit)
 
-windowed_30 = digital_values_no_offset * w_signal # windowing signal
+windowed_30_1 = digital_values_no_offset_1 * w_signal_1
+windowed_30_2 = digital_values_no_offset_2 * w_signal_2 # windowing signal
 eps = 1e-12 # to avoid log(0)
 
 # truncate to 12 bit
-windowed_truncate = truncate(truncate_bit,windowed_30)
-freq,re_part,im_part = fft_complex(M,N,P,windowed_truncate,adc_sampling_rate,gain_bits)
+windowed_truncate_1 = truncate(truncate_bit,windowed_30_1)
+windowed_truncate_2 = truncate(truncate_bit,windowed_30_2)
 
-re_part_int = (np.round(re_part)).astype(np.int64)
-im_part_int = (np.round(im_part)).astype(np.int64)
+# fft
+freq_1,re_part_1,im_part_1 = fft_complex(M,N,P,windowed_truncate_1,adc_sampling_rate,gain_bits)
+freq_2,re_part_2,im_part_2 = fft_complex(M,N,P,windowed_truncate_2,adc_sampling_rate,gain_bits)
 
-index_signal = np.array(im_part_int).argmax()
-print("max re (signed 32-bit):", format((re_part_int[index_signal]) & 0xFFFFFFFF, '#034b'))
-print("max im (signed 32-bit):", format((im_part_int[index_signal]) & 0xFFFFFFFF, '#034b'))
+#converting to int
+re_part_int_1 = (np.round(re_part_1)).astype(np.int64)
+im_part_int_1 = (np.round(im_part_1)).astype(np.int64)
+re_part_int_2 = (np.round(re_part_2)).astype(np.int64)
+im_part_int_2 = (np.round(im_part_2)).astype(np.int64)
 
-# from observed values truncating to 24 bits seems to retain fft properties
-# also rounding to 18 bits 
-re_part_trunc,im_part_trunc = truncate_after_fft(re_part_int,im_part_int,fft_points)
+index_signal_1 = np.array(im_part_int_1).argmax()
+index_signal_2 = np.array(im_part_int_2).argmax()
+print("max re (signed 32-bit):", format((re_part_int_1[index_signal_1]) & 0xFFFFFFFF, '#034b'))
+print("max im (signed 32-bit):", format((im_part_int_1[index_signal_1]) & 0xFFFFFFFF, '#034b'))
+print("max re (signed 32-bit):", format((re_part_int_2[index_signal_2]) & 0xFFFFFFFF, '#034b'))
+print("max im (signed 32-bit):", format((im_part_int_2[index_signal_2]) & 0xFFFFFFFF, '#034b'))
 
-sq_real = np.square(re_part_trunc)
-sq_im = np.square(im_part_trunc)
-power_spectrum = (np.array(sq_real)+np.array(sq_im))
+# from observed values truncating to 24 bits seems to retain fft properties therefore shaving from MSB till 24 bits
+# also rounding to 18 bits to keep withing DSP 48 slice
+re_part_trunc_1,im_part_trunc_1 = truncate_after_fft(re_part_int_1,im_part_int_1,fft_points)
+re_part_trunc_2,im_part_trunc_2 = truncate_after_fft(re_part_int_2,im_part_int_2,fft_points)
 
+# getting power spectrum through auto correlation for signal 1
+sq_real_1 = np.square(re_part_trunc_1)
+sq_im_1 = np.square(im_part_trunc_1)
+power_spectrum_1 = (np.array(sq_real_1)+np.array(sq_im_1))
+
+# getting power spectrum through auto correlation for signal 2
+sq_real_2 = np.square(re_part_trunc_2)
+sq_im_2 = np.square(im_part_trunc_2)
+power_spectrum_2 = (np.array(sq_real_2)+np.array(sq_im_2))
+
+# graph of power spectrum 1
 plt.figure(figsize=(10,4))
-plt.plot(freq,power_spectrum)
+plt.plot(freq_1,power_spectrum_1)
 plt.xlim(0,4000e6)
-plt.title("power_spectrum of FFT Output Signal")
+plt.title("power_spectrum_1 of FFT Output Signal")
 plt.xlabel("freq")
 plt.ylabel("Power")
 plt.grid(True)
 plt.show()
 
-power_spectrum_accu = [0]*len(power_spectrum)
+# graph of power spectrum 2
+plt.figure(figsize=(10,4))
+plt.plot(freq_2,power_spectrum_2)
+plt.xlim(0,4000e6)
+plt.title("power_spectrum_2 of FFT Output Signal")
+plt.xlabel("freq")
+plt.ylabel("Power")
+plt.grid(True)
+plt.show()
+
+# accumalation
+power_spectrum_accu_1 = [0]*len(power_spectrum_1)
+power_spectrum_accu_2 = [0]*len(power_spectrum_2)
 
 for i in range(0,4095):
-    power_spectrum_accu = power_spectrum + power_spectrum_accu
+    power_spectrum_accu_1 = power_spectrum_1 + power_spectrum_accu_1
+    
+for i in range(0,4095):
+    power_spectrum_accu_2 = power_spectrum_2 + power_spectrum_accu_2    
  
 plt.figure(figsize=(10,4))
-plt.plot(freq,power_spectrum_accu)
+plt.plot(freq_1,power_spectrum_accu_1)
 plt.xlim(0,2000e6)
-plt.title("power_spectrum and accumalation of FFT Output Signal")
+plt.title("power_spectrum_1 and accumalation of FFT Output Signal")
 plt.xlabel("freq")
-plt.ylabel("power_spectrum_accu")
+plt.ylabel("power_spectrum_accu_1")
+plt.grid(True)
+plt.show()  
+
+plt.figure(figsize=(10,4))
+plt.plot(freq_2,power_spectrum_accu_2)
+plt.xlim(0,2000e6)
+plt.title("power_spectrum_2 and accumalation of FFT Output Signal")
+plt.xlabel("freq")
+plt.ylabel("power_spectrum_accu_2")
+plt.grid(True)
+plt.show()   
+
+cross_corr_re = []
+cross_corr_im = []
+
+for a, b, x, y in zip(re_part_trunc_2, im_part_trunc_2, re_part_trunc_1, im_part_trunc_1):
+    # (a + ib)(x - iy) = (ax + by) + i(bx - ay)
+    cross_corr_re.append(a*x + b*y)
+    cross_corr_im.append(b*x - a*y)
+    
+cross_corr_combined = (np.array(cross_corr_re) + 1j*(np.array(cross_corr_im)))
+
+
+# cross_corr_power_acc_mag = [0]*len(cross_corr_mag)
+# cross_corr_power_acc_phase = [0]*len(cross_corr_phase)
+cross_corr_combined_acc = [0]*len(cross_corr_combined)
+
+for i in range(0,4095):
+    cross_corr_combined_acc = cross_corr_combined + cross_corr_combined_acc
+
+# for i in range(0,4095):
+#     cross_corr_power_acc_mag = cross_corr_mag + cross_corr_power_acc_mag
+    
+# for i in range(0,4095):
+#     cross_corr_power_acc_phase = cross_corr_phase + cross_corr_power_acc_phase 
+
+cross_corr_mag = np.abs(cross_corr_combined_acc)
+cross_corr_phase = np.angle(cross_corr_combined_acc,deg=False)
+    
+plt.figure(figsize=(10,4))
+plt.plot(freq_1,cross_corr_mag)
+plt.xlim(0,2000e6)
+plt.title("power_spectrum_mag and  cross accumalation of FFT Output Signal")
+plt.xlabel("freq")
+plt.ylabel("cross_corr_power_acc")
+plt.grid(True)
+plt.show()     
+
+plt.figure(figsize=(10,4))
+plt.plot(freq_1,cross_corr_phase)
+plt.xlim(0,2000e6)
+plt.title("power_spectrum_phase and  cross accumalation of FFT Output Signal")
+plt.xlabel("freq")
+plt.ylabel("cross_corr_power_acc")
 plt.grid(True)
 plt.show()    
-       
