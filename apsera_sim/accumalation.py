@@ -107,16 +107,20 @@ for i in range(0,acc):
     
     cross_corr_re = []
     cross_corr_im = []
-
-    for a, b, x, y in zip(re_part_trunc_1, im_part_trunc_1, re_part_trunc_2, im_part_trunc_2): #convert to ordered list
+    
+    #convert to ordered list
+    for a, b, x, y in zip(re_part_trunc_1, im_part_trunc_1, re_part_trunc_2, im_part_trunc_2): 
         # (a + ib)(x - iy) = (ax + by) + i(bx - ay)
         cross_corr_re.append(a*x + b*y)
         cross_corr_im.append(b*x - a*y)
-        
+    
+    #make complex list    
     cross_corr_combined = (np.array(cross_corr_re) + 1j*(np.array(cross_corr_im)))
     
+    #accumalate
     cross_corr_combined_acc += cross_corr_combined 
     
+    #shifting chunk
     x = y
     y = y+fft_points
 
