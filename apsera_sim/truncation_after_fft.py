@@ -35,7 +35,7 @@ digital_values = [adc(vin,adc_bits,v_ref) for vin in adc_signal]
 # removing dc offset
 digital_values_no_offset = np.array(digital_values) - (2**(adc_bits-1))
 digital_values_no_offset = (digital_values_no_offset).astype(int)
- 
+
 w_signal,gain_bits = window_bits(adc_time,w_bit)
 
 #windowing 
@@ -57,5 +57,5 @@ index_signal_2 = np.array(im_part_int).argmax()
 print("max re (signed 32-bit):", format((re_part_int[index_signal_1]) & 0xFFFFFFFF, '#034b'))
 print("max im (signed 32-bit):", format((im_part_int[index_signal_1]) & 0xFFFFFFFF, '#034b'))
 
-# from observed values truncating to 24 bits seems to retain fft properties therefore shaving from MSB till 24 bits
+# from observed values truncating to 25 bits seems to retain fft properties therefore shaving from MSB till 25 bits
 # also rounding to 18 bits to keep withing DSP 48 slice

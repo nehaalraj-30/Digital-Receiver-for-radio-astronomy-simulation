@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from sine_input import sine_curve
-from adc import adc
+from adc import adc,sample
 from window import window_bits
 from fft_return_complex import fft_complex
 from truncating import truncate,truncate_after_fft
@@ -17,7 +17,7 @@ w_bit = 18
 v_ref = 0.7962 # to keep output power that is adc at 2dBm of input 
 f1 = 5e8
 f2 = 5e8
-sampling_rate = 4e9 # for producing sine wave
+sampling_rate = 1e12 # for producing sine wave
 adc_sampling_rate = 4e9
 fft_points = 2**14
 acc = 64
@@ -39,14 +39,13 @@ cross_corr_combined_acc = np.zeros(P, dtype=complex)
 
 for i in range(0,acc):
     
-    # taking ith 16k chunk at 4Ghz
+    # taking ith 16k chunk 
     time_1,sine_1 = sine_curve(f1,sampling_rate,duration,0,i)
     time_2,sine_2 = sine_curve(f2,sampling_rate,duration,90,i)
     
-    adc_time_1 = time_1
-    adc_time_2 = time_2
-    adc_signal_1 = sine_1
-    adc_signal_2 = sine_2
+    #sample and hold
+    adc_time_1,adc_signal_1  = sample(time_1,adc_sampling_rate,sine_1)
+    adc_time_2, adc_signal_2 = sample(time_2,adc_sampling_rate,sine_2)
 
     #passing adc
     digital_values_1 = [adc(vin,adc_bits,v_ref) for vin in adc_signal_1] 

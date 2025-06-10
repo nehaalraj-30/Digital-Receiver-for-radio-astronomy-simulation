@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from window import window_bits,window_precision
+from window import window_bits,window_precision,window_bits_normalised
 
 M = 16
 N = 1024
@@ -35,8 +35,27 @@ for bit in n_bits:
     freqs_bits = np.fft.fftshift(np.fft.fftfreq(fft_len,d=dt))  #bin-shift 
     freq_n_bits_shift_db = 20 * np.log10(np.abs(freq_n_bits_shift) / np.max(np.abs(freq_n_bits_shift))+eps)
     plt.plot(freqs_bits, freq_n_bits_shift_db, label=f'{bit}-bit Truncated Window')
+    
+bits_18_window,gain = window_bits_normalised(t,18)
+freq_n_bits_18 = np.fft.fft(bits_18_window,fft_len)  # Zero-padding 
+freq_n_bits_shift_18 = np.fft.fftshift(freq_n_bits_18) # o/p shift
+freqs_bits = np.fft.fftshift(np.fft.fftfreq(fft_len,d=dt))  #bin-shift 
+diff_18 = freq_full_precision_shift-freq_n_bits_shift_18
+freq_error_db_18 = 20 * np.log10(np.mean(np.abs(diff_18)+eps))
 
-plt.title(f"Magnitude Spectrum db (Row-Column FFT, M={M}, N={N}, n_bits={n_bits})")
+
+bits_25_window,gain = window_bits_normalised(t,25)
+freq_n_bits = np.fft.fft(bits_25_window,fft_len)  # Zero-padding 
+freq_n_bits_shift_25 = np.fft.fftshift(freq_n_bits) # o/p shift
+freqs_bits = np.fft.fftshift(np.fft.fftfreq(fft_len,d=dt))  #bin-shift 
+diff_25 = freq_full_precision_shift-freq_n_bits_shift_25
+freq_error_db_25 = 20 * np.log10(np.mean(np.abs(diff_25)+eps))
+
+print(f"error in 18 bit window with respect to full precision in dbfs = {freq_error_db_18}")
+print(f"error in 25 bit window with respect to full precision in dbfs = {freq_error_db_25}")
+
+
+plt.title(f"Magnitude Spectrum db")
 plt.xlabel("Frequency (Hz)")
 plt.ylabel("|X(f)|")
 plt.xlim(-adc_sampling_rate / 2, adc_sampling_rate / 2)
