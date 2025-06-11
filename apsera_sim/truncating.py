@@ -26,12 +26,12 @@ def truncate_after_fft(re_part_int,im_part_int,fft_points):
 
     for i in range(fft_points):
         if re_part_int[i]>=0:
-            re_part_int[i] = (re_part_int[i]%(2**24))//2**6 
+            re_part_int[i] = (re_part_int[i]%(2**25))//2**7 
         if re_part_int[i]<0:
-            re_part_int[i] = -((-(re_part_int[i])%(2**24))//2**6)
+            re_part_int[i] = -((-(re_part_int[i])%(2**25))//2**7)
         if im_part_int[i]>=0:
-            im_part_int[i] = (im_part_int[i]%(2**24))//2**6        
+            im_part_int[i] = (im_part_int[i]%(2**25))//2**7       
         if im_part_int[i]<0:
-            im_part_int[i] = -((-(im_part_int[i])%(2**24))//2**6)
+            im_part_int[i] = -((-(im_part_int[i])%(2**25))//2**7)
     
     return re_part_int,im_part_int

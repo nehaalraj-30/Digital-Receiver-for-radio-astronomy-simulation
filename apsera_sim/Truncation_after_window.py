@@ -12,7 +12,7 @@ M = 16
 N = 1024
 P = M*N
 alpha = 1
-n_bits = [8,10,12,14,16]
+n_bits = [8,10,12,14,16,20,24]
 adc_bits = 12
 w_bit = 18
 v_ref = 0.7962 # to keep output power that is adc at 2dBm of input 
@@ -78,7 +78,7 @@ for bit in n_bits:
 
 plt.title("30 and n_bits fft ")
 plt.xlabel("Frequency (Hz)")
-plt.ylabel("|X(f)| in db")
+plt.ylabel("|X(f)|/max(|X(f)|) in db")
 plt.xlim(-4000e6, 4000e6)
 plt.grid(True)
 plt.legend()
@@ -90,7 +90,7 @@ plt.close()
 plt.figure(figsize=(12,6))
 for bit in n_bits:
     plt.plot(freq_truncated,diff[bit],label = f'{bit}-bit error with 30 bit')
-plt.title('error in db scale_8-16b')
+plt.title('error in db scale_8-16b with respect 30 bit window')
 plt.xlabel('frequency (hz)')
 plt.ylabel("error in db")   
 plt.xlim(-4000e6, 4000e6)

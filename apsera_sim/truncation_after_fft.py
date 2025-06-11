@@ -5,7 +5,7 @@ from sine_input import sine_curve
 from adc import sample,adc
 from window import window_bits
 from fft_return_complex import fft_complex
-from truncating import truncate
+from truncating import truncate,truncate_after_fft
 
 M = 16
 N = 1024
@@ -54,8 +54,14 @@ im_part_int = (np.round(im_part)).astype(np.int64)
 
 index_signal_1 = np.array(im_part_int).argmax()
 index_signal_2 = np.array(im_part_int).argmax()
-print("max re (signed 32-bit):", format((re_part_int[index_signal_1]) & 0xFFFFFFFF, '#034b'))
-print("max im (signed 32-bit):", format((im_part_int[index_signal_1]) & 0xFFFFFFFF, '#034b'))
+print("max real part (signed 32-bit):", format((re_part_int[index_signal_1]) & 0xFFFFFFFF, '#034b'))
+print("max imaginary part (signed 32-bit):", format((im_part_int[index_signal_1]) & 0xFFFFFFFF, '#034b'))
+
+re_part_trunc,im_part_trunc = truncate_after_fft(re_part_int,im_part_int,fft_points)
+
+index_signal_trunc = np.array(im_part_trunc).argmax()
+print("Max integer after truncation", max(im_part_trunc))
+print("max imaginary after truncation (signed 32-bit):", format((im_part_trunc[index_signal_trunc]) & 0xFFFFFFFF, '#020b'))
 
 # from observed values truncating to 25 bits seems to retain fft properties therefore shaving from MSB till 25 bits
 # also rounding to 18 bits to keep withing DSP 48 slice

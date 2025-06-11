@@ -20,7 +20,7 @@ f2 = 5e8
 sampling_rate = 1e12 # for producing sine wave
 adc_sampling_rate = 4e9
 fft_points = 2**14
-acc = 64
+acc = 4096
 x = 0
 y = fft_points
 
